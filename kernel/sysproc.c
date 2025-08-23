@@ -80,8 +80,47 @@ sys_sleep(void)
 int
 sys_pgaccess(void)
 {
-  // lab pgtbl: your code here.
-  return 0;
+    // 添加变量声明
+    uint64 startaddr;  // 起始地址
+    int npage;         // 页面数量
+    uint64 userbuf;    // 用户空间缓冲区地址
+
+    // 从用户空间获取参数
+    if(argaddr(0, &startaddr) < 0) {
+        return -1;
+    }
+    if(argint(1, &npage) < 0) {
+        return -1;
+    }
+    if(argaddr(2, &userbuf) < 0) {
+        return -1;
+    }
+
+    // 参数验证
+    if(npage < 0 || npage > 64) {
+        return -1;
+    }
+
+    struct proc *p = myproc();
+    uint64 bitmap = 0;
+    
+    // 检查每个页面的访问位
+    for(int i = 0; i < npage; i++) {
+        uint64 addr = startaddr + i * PGSIZE;
+        pte_t *pte = walk(p->pagetable, addr, 0);
+        
+        if(pte && (*pte & PTE_A)) {
+            bitmap |= (1 << i);      // 设置对应的位
+            *pte &= ~PTE_A;          // 清除访问位
+        }
+    }
+    
+    // 将结果复制回用户空间
+    if(copyout(p->pagetable, userbuf, (char *)&bitmap, sizeof(bitmap)) < 0) {
+        return -1;
+    }
+    
+    return 0;
 }
 #endif
 

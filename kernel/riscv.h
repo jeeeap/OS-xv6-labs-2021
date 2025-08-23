@@ -364,3 +364,11 @@ sfence_vma()
 
 typedef uint64 pte_t;
 typedef uint64 *pagetable_t; // 512 PTEs
+
+
+#define PTE_V (1L << 0) // valid
+#define PTE_R (1L << 1) // readable
+#define PTE_W (1L << 2) // writable
+#define PTE_X (1L << 3) // executable
+#define PTE_U (1L << 4) // user
+#define PTE_A (1L << 6) // accessed
