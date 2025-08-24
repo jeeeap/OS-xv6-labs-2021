@@ -114,6 +114,11 @@ allocproc(void)
       release(&p->lock);
     }
   }
+
+  p->interval = 0;
+  p->handler = 0;
+  p->ticks_passed = 0;
+  p->alarm_tf = 0;
   return 0;
 
 found:

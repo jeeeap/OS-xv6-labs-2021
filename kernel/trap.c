@@ -76,6 +76,21 @@ usertrap(void)
   if(p->killed)
     exit(-1);
 
+  if(which_dev == 2){
+    struct proc *p = myproc();
+    if(p->interval > 0){
+      p->ticks_passed++;
+      if(p->ticks_passed >= p->interval && p->alarm_tf == 0){
+        // 保存当前 trapframe 的副本
+        p->alarm_tf = kalloc();
+        if(p->alarm_tf)
+          memmove(p->alarm_tf, p->trapframe, sizeof(struct trapframe));
+        // 修改返回地址为用户处理函数
+        p->trapframe->epc = p->handler;
+      }
+    }
+    yield();
+  }
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2)
     yield();
