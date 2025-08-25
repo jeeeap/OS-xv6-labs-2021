@@ -6,7 +6,12 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
-
+#include "sleeplock.h"
+#include "fs.h"
+#include "memlayout.h"
+#include "defs.h"
+#include "fcntl.h"
+#include "file.h"
 uint64
 sys_exit(void)
 {
